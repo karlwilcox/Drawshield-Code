@@ -235,7 +235,7 @@ class references {
     // Fixup quarterings to the nearest known number
     $nodeList = $this->xpath->query("//complex[@keyterm='quartered']");
     foreach ($nodeList as $node) {
-      if ( $node->getAttribute('order') == "4-saltire" )
+      if ( $node->getAttribute('layout') != "cross" )
         continue;
       //error_log("Testing quartering");
       // Work out the preferred number of quarterings (depends on what we can draw)

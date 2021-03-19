@@ -1093,6 +1093,7 @@ class englishGrammar extends grammar
         $highest = 0;
 
         if (($marshall = self::find(languageDB::QUARTERED)) != null) {
+            $palefess = substr($marshall, 0, 4) == "per-";
             self::ignore(languageDB::COLON); // allow quarterly: ...
             $quartered = $this->schema->makeNode(blazonML::E_COMPLEX, array('keyterm' => blazonML::V_QUARTERED), self::tokens(), self::lineNo());
             if (($qmod = self::find(languageDB::QUARTERMODS)) != null) {
@@ -1121,7 +1122,8 @@ class englishGrammar extends grammar
                         $this->previousTypes[] = $quarterType;
                     }
                     $indices[] = $keyterm; // make a list of quarter numbers
-                    if ($keyterm > $highest) $highest = $keyterm;
+                    if ($keyterm > $highest)
+                        $highest = $keyterm;
                     self::comma();
                     self::ignore(languageDB::ANDD);
                     $found = $foundQuarter = true;
@@ -1147,7 +1149,7 @@ class englishGrammar extends grammar
                 } // Keep going as long as we find quarters
             } while ($found);
             array_pop($this->previousTypes);
-            if ($marshall == 'quarterly' and !$foundQuarter) {
+            if (($marshall == 'quarterly' || $palefess) and !$foundQuarter) {
                 self::restore($state); // backtrack, assume this is quarterly division
                 return null;
             }
@@ -1171,9 +1173,13 @@ class englishGrammar extends grammar
                     $subshields[$i]->setAttribute(blazonML::A_INDEX, "$i");
                 }
             }
+            $layout = "cross";
             if ($marshall == 'quartered-per-saltire') {
-                $order = '4-saltire';
+                $layout = 'saltire';
+            } else if ( $palefess ) {
+                $layout = substr($marshall, 4);
             }
+            $quartered->setAttribute('layout', $layout);
             $quartered->setAttribute('order', $order);
             for ($i = 1; $i <= $highest; $i++)
                 $quartered->appendChild($subshields[$i]);

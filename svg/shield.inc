@@ -91,6 +91,60 @@ function makedimidiated( $children, $layout ) {
   return $retval . "<path stroke-width=\"3\" stroke=\"" . rgb('marshalling-stroke') . "\" d=\"M 499 0 v 1200\" />\n";
 }
 
+function makeQuarteredWrapper($child, $children, $layout)
+{
+    global $messages;
+
+    $order = $child->getAttribute('order');
+
+    switch ( $child->getAttribute('layout') )
+    {
+        case "saltire":
+            return make_quartered_saltire($children, $layout);
+        case "pale":
+            return makeQuartered($order, 1, $children, $layout);
+        case "fess":
+            return makeQuartered(1, $order, $children, $layout);
+    }
+
+    switch ( $child->getAttribute('order') )
+    {
+        case 4:
+            return makeQuartered4($children, $layout);
+        case 5:
+            return makeQuartered5($children, $layout);
+        case 6:
+            return makeQuartered6($children, $layout);
+        case 8:
+            return makeQuartered8($children, $layout);
+        case 9:
+            return makeQuartered(3,3, $children, $layout);
+        case 12:
+            return makeQuartered(3,4, $children, $layout);
+        case 16:
+            return makeQuartered(4,4, $children, $layout);
+        case 20:
+            return makeQuartered(4,5, $children, $layout);
+        case 25:
+            return makeQuartered(5,5, $children, $layout);
+        case 30:
+            return makeQuartered(5,6, $children, $layout);
+        case 36:
+            return makeQuartered(6,6, $children, $layout);
+        case 42:
+            return makeQuartered(6,7, $children, $layout);
+        case 49:
+            return makeQuartered(7,7, $children, $layout);
+        case 56:
+            return makeQuartered(7,8, $children, $layout);
+        case 64:
+            return makeQuartered(8,8, $children, $layout);
+        default:
+            $messages->addMessage('internal', 'No code to draw ' . $children->length . ' quarters yet');
+            return "";
+    }
+}
+
 function makeshield( DOMElement &$node, $layout ) {
   global $messages;
   
@@ -119,59 +173,8 @@ function makeshield( DOMElement &$node, $layout ) {
             $retval .= makeImpaled( $children, $layout );
             break;
           case 'quartered':
-            switch ( $child->getAttribute('order') ) {
-              case '4-saltire':
-                $retval .= make_quartered_saltire($children, $layout);
-                break;
-              case 4:
-                $retval .= makeQuartered4($children, $layout);
-                break;
-              case 5:
-                $retval .= makeQuartered5($children, $layout);
-                break;
-              case 6:
-                $retval .= makeQuartered6($children, $layout);
-                break;
-              case 8:
-                $retval .= makeQuartered8($children, $layout);
-                break;
-              case 9:
-                $retval .= makeQuartered(3,3, $children, $layout);
-                break;
-              case 12:
-                $retval .= makeQuartered(3,4, $children, $layout);
-                break;
-              case 16:
-                $retval .= makeQuartered(4,4, $children, $layout);
-                break;
-              case 20:
-                $retval .= makeQuartered(4,5, $children, $layout);
-                break;
-              case 25:
-                $retval .= makeQuartered(5,5, $children, $layout);
-                break;
-              case 30:
-                $retval .= makeQuartered(5,6, $children, $layout);
-                break;
-              case 36:
-                $retval .= makeQuartered(6,6, $children, $layout);
-                break;
-              case 42:
-                $retval .= makeQuartered(6,7, $children, $layout);
-                break;
-              case 49:
-                $retval .= makeQuartered(7,7, $children, $layout);
-                break;
-              case 56:
-                $retval .= makeQuartered(7,8, $children, $layout);
-                break;
-              case 64:
-                $retval .= makeQuartered(8,8, $children, $layout);
-                break;
-              default:
-                $messages->addMessage('internal', 'No code to draw ' . $children->length . ' quarters yet');
-                break;
-            }
+            $retval .= makeQuarteredWrapper($child, $children, $layout);
+            break;
         }
         break;
       case 'missing':
